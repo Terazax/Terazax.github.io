@@ -215,23 +215,55 @@
 
 
 
-### Plotting Marker Genes
+### Visualizing Gene Expression
 
-		# visualize some of the marker genes for cluster 11
-		FeaturePlot(pfc, features = c("Gad1", "Gad2"), order=T)
-		DotPlot(pfc, features = c("Gad1","Gad2","Slc32a1","Prox1","Pnoc"))
-		VlnPlot(pfc, features = c("Gad1"))
+	# visualize some of the marker genes for cluster 11
+	FeaturePlot(pfc, features = c("Gad1", "Gad2"), order=T)
+	DotPlot(pfc, features = c("Gad1","Gad2","Slc32a1","Prox1","Pnoc"))
+	VlnPlot(pfc, features = c("Gad1"))
+
+
+
+### Subsetting cells for further analysis
+
+	# select a subset of clusters ("neurons") for further analysis
+	neurons <- subset(pfc, idents = c("0","1","4","7"))
+	# examine the new subset
+	neurons
+
+	# switch to the SCT-normalized data before re-running PCA/clustering
+	DefaultAssay(neurons) <- "SCT"
+
+	# repeat PCA and clustering on the new subset
+	neurons <- RunPCA(neurons, npcs = 30)
+	neurons <- FindNeighbors(neurons, dims = 1:30)
+	neurons <- FindClusters(neurons, resolution = 0.7)
+	neurons <- RunUMAP(neurons, dims = 1:30)
+
+	# remember to switch back to the RNA assay for visualization/gene expression
+	DefaultAssay(neurons) <- "RNA"
+
+	# plot the reclustered subset
+	DimPlot(neurons, label=T)
+
+
+
+
 
 
 ### Challenges:
 
-		Use R help to look up additional parameters for the DotPlot() function
-			Try changing the dot.scale parameter - how do your plots change?
-			
-		What is the default `min.pct` cutoff for the FindMarkers() function?
+		#Use R help to look up additional parameters for the DotPlot() function
+		
+		#Try changing the dot.scale parameter - how do your plots change?
 
-		What happens to the output if you omit the `only.pos` parameter when running FindMarkers() on cluster 11?
+		#What is the default `min.pct` cutoff for the FindMarkers() function?
 
+		#What happens to the output if you omit the `only.pos` parameter when running FindMarkers() on cluster 11?
+
+		#Try including more or fewer PCs when clustering - how does that affect the results?
+
+		#Try increasing/decreasing the resolution of the FindClusters() function and examine how clustering changes. 
 
 
 
